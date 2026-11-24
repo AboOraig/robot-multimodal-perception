@@ -28,6 +28,27 @@ Caveats that belong next to these verdicts (full discussion in the report):
   `scripts/check_leakage.py` quantifies it and it is reported with every proprioception result.
 * Verdicts on the `test_ood` split (secondary) agree in direction but are weaker (H2 at threshold, H3 partial).
 
+## Report, figures and video
+
+* **Report (PDF, LaTeX source in `report/`):** [`report/main.pdf`](report/main.pdf) ([`main.tex`](report/main.tex))
+* **Explainer video (silent, 2.5 min, simulation only):** [`docs/video/explainer_simulation_only.mp4`](docs/video/explainer_simulation_only.mp4)
+
+Figures (test split, mean over 3 seeds; each is labelled simulation-only):
+
+| | |
+|---|---|
+| ![Position error by scenario](docs/figures/fig1_rmse_by_scenario.png) | ![Calibration](docs/figures/fig2_reliability.png) |
+| **Fig. 1** Position error by scenario | **Fig. 2** Calibration (reliability) |
+| ![Error vs sigma](docs/figures/fig3_error_vs_sigma.png) | ![Clean vs mixed](docs/figures/fig4_clean_vs_mixed_training.png) |
+| **Fig. 3** Error vs predicted uncertainty | **Fig. 4** Clean vs mixed training (H3) |
+| ![Expert weights](docs/figures/fig5_expert_weights.png) | ![Contact ablation](docs/figures/fig6_contact_ablation.png) |
+| **Fig. 5** How F-CI distributes trust among experts | **Fig. 6** Contact-expert ablation |
+| ![H1 forest](docs/figures/fig7_h1_forest.png) | |
+| **Fig. 7** H1: paired bootstrap 95% CIs | |
+
+Machine-readable verdicts and tables: [`docs/results/decisions_test.json`](docs/results/decisions_test.json),
+[`docs/results/tables_test.md`](docs/results/tables_test.md).
+
 ## Method in brief
 
 * Three encoders (vision CNN, proprioception MLP, contact MLP conditioned on proprioception).
@@ -118,6 +139,8 @@ scripts/      CLI entry points (one per pipeline step)
 tests/        unit and end-to-end tests
 docs/         loss_math.md, design.md, preregistration.md
 assets/       robot model provenance (model itself is fetched)
+report/       LaTeX report (main.tex, tables, figures) and main.pdf
+docs/figures  final figures; docs/results: verdicts and tables; docs/video: explainer
 ```
 
 ## Outputs and where they live
