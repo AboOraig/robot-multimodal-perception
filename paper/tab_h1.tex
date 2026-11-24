@@ -1,0 +1,9 @@
+\begin{table}[t]\centering\small\begin{tabular}{lrrrrr}\toprule
+Scenario & vision & F-CI & $\Delta$ (95\,\% CI) & $p_{\mathrm{Holm}}$ & seeds \\\midrule
+occlusion L2 & 5.0 & 2.7 & $-2.3$ [-2.7,-1.9] & 0.001 & 3/3 \\
+occlusion L4 & 10.3 & 3.7 & $-6.6$ [-7.2,-6.0] & 0.001 & 3/3 \\
+random occl L4 & 48.4 & 3.6 & $-44.7$ [-47.3,-42.2] & 0.001 & 3/3 \\
+clean$^{*}$ & 3.5 & 1.5 & $-2.0$ [-2.2,-1.8] & -- & 3/3 \\
+vision dropout L3$^{*}$ & 50.5 & 2.1 & $-48.5$ [-52.5,-44.3] & -- & 3/3 \\
+occl L4 {+} proprio bias L3$^{*}$ & 10.3 & 14.3 & $+4.0$ [+2.7,+5.2] & -- & 0/3 \\
+\bottomrule\end{tabular}\caption{H1, test split, hold stage, xy RMSE in mm. $\Delta=$ RMSE(F-CI) $-$ RMSE(vision); negative favours fusion. Rows marked $^{*}$ are reported but not part of the decision rule. Seeds: number of training seeds in which F-CI is lower.}\label{tab:h1}\end{table}

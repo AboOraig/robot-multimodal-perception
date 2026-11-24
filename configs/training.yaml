@@ -1,0 +1,30 @@
+# Training configuration (M5). Paths may be absolute (e.g. F:/runs) or relative to the repo root.
+data_dir: data/v1
+out_root: experiments/runs        # checkpoints + logs: <out_root>/<kind>/seed<N>/
+device: auto
+amp: true                         # fp16 autocast on CUDA; the covariance maths always runs in fp32
+deterministic: false              # true -> torch deterministic algorithms (slower)
+train:
+  epochs: 20
+  batch_size: 128
+  lr: 0.002
+  weight_decay: 0.0001
+  grad_clip: 5.0
+  warmup_epochs: 3                # MSE warm-up before switching to the NLL
+  warmup_cov_weight: 0.1          # warm-up also trains the covariance (NLL on a detached mean): avoids a loss spike at the switch
+  beta_nll: 0.0                   # 0 = plain NLL; e.g. 0.5 = beta-NLL
+head: {hidden: 128, eps: 0.001}
+vision: {width: 32, keypoints: 32, embed: 128}
+proprio: {hidden: 256, layers: 3, embed: 128, use_fk: true, use_gate: true, gate_inputs: false}   # gate_inputs=true -> B4g (set by --gate-inputs)
+fusion: {mode: learned, embed: 128, hidden: 256, lr: 0.001, aux_weight: 0.5, weight_hidden: 64}   # mode: concat|learned|gated|poe|tpoe|ci (--mode)
+contact: {hidden: 128, layers: 3}
+mixing:                           # mixed-degradation training (enabled by --mixed)
+  enabled: false
+  p_clean: 0.15                   # probability an episode stays clean
+  p_family: 0.3                   # each relevant degradation family independently active with this probability
+  max_level: 4
+  refresh_every: 2                # epochs between re-degradations of the train set
+  val_seed: 777                   # fixed degraded validation set (model selection)
+  forbidden_pairs:                # family pairs NEVER co-active in training -> unseen combinations at test time
+    - [vision_occlusion, proprio_noise]
+    - [vision_occlusion, proprio_bias]

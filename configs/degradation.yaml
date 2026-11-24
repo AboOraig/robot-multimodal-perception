@@ -1,0 +1,26 @@
+# Degradation configuration (M3). Level 0 = clean (identity); levels 1..4 = increasing severity.
+# Level values are CALIBRATED against measured signal scales: see scripts/calibrate_degradation.py
+# and experiments/results/degradation_calibration.json. Change them only together with a new calibration run.
+seed: 1000                         # evaluation corruption seed (training augmentation uses other seeds)
+dropout_mean_burst_frames: 5       # mean length of a dropout burst (0.25 s at 20 Hz)
+bias_drift_frac: 0.1               # bias random walk: std per sqrt(second) = frac * sigma (~0.3 sigma over an 8 s episode)
+occlusion_jitter_frac: 0.25        # targeted occluder centre jitter, in apparent cube widths
+occlusion_decoys: 2                # identical decoy squares per targeted occluder (0 = the old, informative single square)
+occluder_gray: 127                 # grey level of the occluder
+proprio_finger_noise_per_rad: 0.05 # finger noise/bias sigma [m] per rad of arm-joint sigma
+proprio_qd_noise_per_rad: 5.0      # velocity noise sigma [rad/s] per rad of position sigma
+contact_torque_arm_m: 0.05         # torque sigma [N m] = force sigma [N] * this moment arm [m]
+
+families:
+  vision_occlusion:        {unit: "square side, in apparent cube widths, centred on the cube (+ decoys)", levels: [0, 0.5, 0.8, 1.05, 2.0]}
+  vision_occlusion_random: {unit: "occluded area fraction of the image (random rectangle)",   levels: [0, 0.10, 0.25, 0.50, 0.75]}
+  vision_noise:            {unit: "gaussian sigma, grey levels (0..255)",                     levels: [0, 5, 10, 20, 40]}
+  vision_blur:             {unit: "gaussian sigma, pixels",                                   levels: [0, 0.5, 1.0, 1.5, 2.5]}
+  vision_illumination:     {unit: "gain range a: gain in [1/(1+a), 1+a], gamma in [1/(1+a/2), 1+a/2]", levels: [0, 0.15, 0.30, 0.50, 0.80]}
+  proprio_noise:           {unit: "joint-angle sigma, rad",                                   levels: [0, 0.002, 0.005, 0.010, 0.020]}
+  proprio_bias:            {unit: "joint-angle offset sigma, rad (constant + drift)",         levels: [0, 0.005, 0.010, 0.020, 0.040]}
+  proprio_dropout:         {unit: "stationary dropout probability (bursty)",                 levels: [0, 0.05, 0.10, 0.20, 0.40]}
+  contact_noise:           {unit: "force sigma, N (torque sigma = 0.05 m * this)",           levels: [0, 0.10, 0.25, 0.50, 1.00]}
+  contact_bias:            {unit: "force offset sigma, N (constant + drift)",                 levels: [0, 0.10, 0.20, 0.50, 1.00]}
+  contact_dropout:         {unit: "stationary dropout probability (bursty)",                 levels: [0, 0.05, 0.10, 0.20, 0.40]}
+  vision_dropout:          {unit: "stationary dropout probability (bursty lost camera frames, black image)", levels: [0, 0.05, 0.10, 0.20, 0.40]}

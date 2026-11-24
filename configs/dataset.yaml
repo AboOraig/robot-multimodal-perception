@@ -1,0 +1,17 @@
+# Dataset configuration (M2). Episode k is fully determined by (simulation.yaml, seed, k).
+seed: 0                       # master seed; overrides simulation.yaml `seed` for data generation
+out_dir: data/v1              # relative to the repo root (git-ignored)
+store_images: true
+image_compression: {name: gzip, level: 4}
+
+splits:
+  n_train: 600
+  n_val: 150
+  n_test: 150                 # in-distribution test
+  n_test_ood: 100             # cube starts in a region never seen in train/val/test
+  ood_region: {x: [0.40, 0.60], y: [0.14, 0.20]}     # held-out strip at the +y edge of the workspace
+  # leakage guard: a val/test episode is rejected if some train episode has an initial cube pose
+  # closer than BOTH thresholds (xy distance, yaw distance modulo 90 deg)
+  min_xy_distance_m: 0.003
+  min_yaw_distance_deg: 3.0
+  max_candidate_ids: 5000     # safety bound on the id search

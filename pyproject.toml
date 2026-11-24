@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mmperc"
+version = "1.0.0"
+description = "Uncertainty-aware multimodal perception for robotic manipulation (simulation only)"
+requires-python = ">=3.10"
+dependencies = ["numpy", "scipy", "mujoco", "matplotlib", "pyyaml", "tqdm", "h5py"]
+# torch is installed separately (choose the CUDA build): see README
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "scripts"]

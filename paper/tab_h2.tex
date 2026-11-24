@@ -1,0 +1,13 @@
+\begin{table}[t]\centering\small\begin{tabular}{lrrrrrr}\toprule
+ & \multicolumn{3}{c}{NLL} & \multicolumn{3}{c}{xy RMSE (mm)} \\\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Scenario & F-CI & F1 & F2 & F-CI & F1 & F2 \\\midrule
+occlusion L4 & -16.54 & -13.43 & -13.44 & 3.7 & 6.0 & 7.3 \\
+random occl L4 & -16.56 & -13.27 & -13.20 & 3.6 & 6.3 & 7.9 \\
+vis noise L3 & -17.83 & -15.38 & -15.18 & 1.8 & 3.5 & 4.7 \\
+illumination L3 & -18.09 & -15.54 & -15.30 & 1.7 & 3.4 & 4.7 \\
+blur L3 & -18.23 & -15.58 & -15.38 & 1.5 & 3.3 & 4.5 \\
+vision dropout L3 & -18.03 & -15.18 & -14.95 & 2.1 & 4.2 & 5.5 \\
+proprio noise L3 & -16.01 & -14.31 & -14.03 & 2.9 & 4.5 & 5.9 \\
+proprio bias L3 & -15.89 & -12.35 & -12.38 & 3.7 & 11.1 & 12.2 \\
+proprio dropout L3 & -17.54 & -13.73 & -13.23 & 3.9 & 23.2 & 28.3 \\
+\bottomrule\end{tabular}\caption{H2, test split, hold stage. F-CI has a significantly lower NLL than both non-uncertainty-aware fusions in all 9 scenarios (all Holm-adjusted $p=0.004$, the floor of the 5000-resample bootstrap after Holm for 18 tests; all 3 seeds agree) and is never significantly less accurate.}\label{tab:h2}\end{table}

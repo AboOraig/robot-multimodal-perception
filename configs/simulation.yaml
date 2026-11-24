@@ -1,0 +1,67 @@
+# Simulation configuration (M1). All lengths in metres, angles in radians, time in seconds.
+# World frame W: origin at the robot base, x forward (towards the workspace), z up.
+# The table surface is the plane z = 0.
+seed: 0
+image_size: 96              # square RGB image, pixels
+log_hz: 20                  # observation / logging rate (physics substeps are derived)
+
+physics:
+  timestep: 0.002           # 500 Hz; must satisfy 1 / (log_hz * timestep) = integer
+  cone: elliptic            # elliptic friction cone: much more stable grasps than pyramidal
+  impratio: 10
+
+robot:
+  xml: assets/robots/franka_emika_panda/panda.xml   # Menagerie Panda (pinned commit, see assets/robots/PROVENANCE.md)
+  home_qpos: [0.0, 0.0, 0.0, -1.57079, 0.0, 1.57079, -0.7853]   # Menagerie "home" keyframe (arm joints)
+  tcp_offset_z: 0.1034      # tool-centre-point along the hand z axis (fingertip pad centre)
+  grip_open: 255.0          # gripper actuator command (0..255): 255 = fully open (8 cm), 0 = closed
+  grip_closed: 0.0
+  grip_kp_scale: 5.0        # multiplies the gripper actuator stiffness (and gain) -> grasp force
+
+cube:
+  size: 0.04                # full edge length
+  mass: 0.2
+  friction: [1.5, 0.01, 0.0001]   # sliding, torsional, rolling
+  rgba: [0.9, 0.1, 0.1, 1.0]
+
+table:
+  rgba: [0.55, 0.62, 0.55, 1.0]
+
+camera:
+  name: scene_cam
+  pos: [0.95, 0.35, 0.55]
+  lookat: [0.50, 0.0, 0.10]
+  fovy: 40.0                # vertical field of view, degrees
+
+episode:
+  cube_x: [0.40, 0.60]            # uniform sampling range of the cube centre
+  cube_y: [-0.20, 0.20]
+  home_noise_rad: 0.10            # uniform +/- noise on the start joint configuration
+  null_posture_noise_rad: 0.25    # uniform +/- noise on the IK null-space reference posture
+  grasp_yaw_noise_rad: 0.14       # +/- misalignment of the gripper w.r.t. the cube faces (~8 deg)
+  grasp_offset_x: [-0.010, 0.010] # in-hand offset along the pad-width axis x_h (m)
+  grasp_offset_z: [-0.010, 0.004] # along the finger axis z_h; positive = TCP lower than cube centre
+  waypoint_x: [0.30, 0.60]        # random intermediate waypoint (decouples early motion from the cube)
+  waypoint_y: [-0.30, 0.30]
+  waypoint_z: [0.25, 0.45]
+  waypoint_yaw_noise_rad: 0.6
+  pregrasp_height: 0.12
+  lift_height: 0.12
+  retreat_height: 0.15
+  ik_path_step: 0.01              # spacing of IK samples along Cartesian segments
+  max_plan_attempts: 20
+  timing:                         # segment durations (s)
+    to_waypoint: 1.4
+    to_pregrasp: 1.2
+    descend: 0.9
+    settle_pre: 0.25
+    close: 0.4
+    grasp_settle: 0.3
+    lift: 0.9
+    hold: 0.8
+    lower: 0.9
+    release: 0.4
+    retreat: 0.8
+  success:
+    min_lift: 0.08                # cube must be this far above rest height at the end of the hold
+    max_tilt_deg: 15.0
