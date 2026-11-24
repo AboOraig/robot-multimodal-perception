@@ -1,0 +1,61 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[top=0.5in,bottom=0.5in,left=0.55in,right=0.55in]{geometry}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{titlesec}
+
+\setlist[itemize]{leftmargin=1.2em,noitemsep,topsep=2pt,parsep=0pt,partopsep=0pt}
+\titleformat{\section}{\normalsize\bfseries}{}{0em}{}[\titlerule]
+
+\begin{document}
+\pagestyle{empty}
+
+%====================
+% HEADER
+%====================
+\begin{center}
+    {\Large \textbf{Uncertainty-Aware Multimodal Perception for Robotic Manipulation:}}\\
+    {\large Visual, Proprioceptive and Contact Sensor Fusion under Sensor Degradation\\
+    (simulation only)}
+\end{center}
+Mohammed Abo Oraig \quad\textbar\quad \href{mailto:mohammed-abo-oraig@etud.univ-tln.fr}{\underline{mohammed-abo-oraig@etud.univ-tln.fr}} \\[0.2cm]
+Code, report and video: \href{https://github.com/AboOraig/robot-multimodal-perception}{\underline{github.com/AboOraig/robot-multimodal-perception}}
+
+\section*{Questions}
+A robot grasping an object must know where it is, but its camera can be occluded, its joints can drop out or drift, and its force sensor can be noisy or biased.
+This study asks three pre-registered questions in a MuJoCo simulation of a Franka Panda holding a cube:
+\textbf{H1} does fusing vision, proprioception and wrist force/torque beat vision alone, especially under occlusion;
+\textbf{H2} does explicit uncertainty make the fusion more reliable when modalities fail;
+\textbf{H3} does training under controlled sensor degradation generalise to combinations of failures never seen in training?
+
+\section*{Approach}
+One RGB camera (96$\times$96), joint positions/velocities and a wrist force/torque sensor feed three encoders.
+Each expert outputs a pose estimate (cube $x,y,z$, yaw) with a full positive-definite covariance (Cholesky parameterisation), trained with a heteroscedastic Gaussian likelihood.
+Experts are fused in information form; the primary rule is covariance intersection, which makes no conditional-independence assumption between modalities (product-of-experts and a tempered variant are compared).
+Baselines: classical estimators, unimodal models, and three fusions without uncertainty (concatenation, learned with masks, gated).
+Data: 600/150/150 episodes by episode, plus 100 out-of-distribution test episodes; 14 model configurations $\times$ 3 seeds (42 trained runs); a degradation grammar over the three sensor families with held-out family pairs.
+The analysis plan (paired episode-level cluster bootstrap, Holm correction, seed sign-consistency, a 1\,mm negligibility margin, explicit decision rules) was written and hashed before the test split was evaluated.
+
+\section*{Main findings (test split, simulation only)}
+\begin{itemize}
+\item \textbf{H1 supported, but only where all modalities are informative.} In the pre-registered coupled-grasp stage, fusion lowers position error against vision alone by $2.3$, $6.6$ and $44.7$\,mm in three occlusion scenarios (moderate, severe, and severe random occlusion), the largest gain being the last. Pooled over all frames under severe occlusion, fusion is \emph{worse} ($41.2$ vs $36.2$\,mm), so the benefit depends on the stage of the task.
+\item \textbf{H2 supported.} Covariance-intersection fusion has better likelihood than both non-uncertainty fusions in 9 of 9 single-modality failure scenarios without significantly worse error, and is the best calibrated of the uncertainty rules in 9 of 9. A model trained only on clean data is badly over-confident under proprioceptive faults (normalised squared error orders of magnitude above its expected value).
+\item \textbf{H3 partially supported.} Mixed-degradation training beats clean training on both unseen failure combinations, but is not non-inferior to a control that sees all combinations (error-ratio upper bounds $1.26$ and $1.32$ against a $1.25$ limit).
+\item \textbf{The contact expert matters when vision fails.} Removing it raises error under severe occlusion from $3.7$ to $6.2$\,mm; my earlier prediction was the opposite and was corrected before the freeze.
+\item \textbf{Weaker out of distribution.} On a held-out cube region the verdicts keep their direction, but H2 only just meets its threshold and H3 is non-inferior in one of two combinations.
+\end{itemize}
+
+\section*{What I contributed and what I did not claim}
+Design and implementation of the simulator, degradation grammar, models, fusion rules, training protocol, evaluation and statistics, with 97 unit and integration tests; the pre-registration and its freeze; the report, figures and video.
+No claim is made about real robots: everything is simulated, with a scripted policy, one object, one camera and per-frame estimators.
+A scripted policy leaks some cube information into joint angles, which is measured and reported next to every proprioception result.
+Other limits: a symmetric cube and three seeds.
+%An AI assistant (Claude) helped develop the code and, later, to edit the text; the research questions, experiments, interpretation and conclusions are mine.
+
+\section*{Skills demonstrated}
+Probabilistic state estimation and sensor fusion (covariance intersection, heteroscedastic learning); MuJoCo simulation of a Franka Panda; PyTorch on a 4\,GB GPU; pre-registered experimental design, paired bootstrap statistics and honest reporting of mixed results; reproducible research software.
+
+\section*{Where this leads}
+Temporal filtering of the per-frame estimates; asymmetric and multiple objects; a policy that does not leak the pose; and, as the real test, hardware.
+\end{document}
